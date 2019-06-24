@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      Device {{device.name}}
+    </ion-title>
+  <ion-buttons slot="end">
+    <ion-icon name="power" size="large" (click)="logout()"></ion-icon>
+  </ion-buttons>
+</ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-segment value="list" (ionChange)="segmentChanged($event)">
+    <ion-segment-button value="list">
+      <ion-label>List</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="action">
+      <ion-label>Action</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="stats">
+        <ion-label>Stats</ion-label>
+      </ion-segment-button>
+  </ion-segment>
+  <br />
+  <div *ngIf="actualState === 'list'">
+    <ion-list>
+      <p><strong>My sensor :</strong></p>
+      <div *ngFor="let sensor of device.sensor; let i = index;" padding>
+        <p><strong>
+          Sensor {{i + 1}}
+        </strong>
+        </p>
+        <p>Type : {{ sensor.type }}</p>
+        <p>Last value : {{ sensor.value }}</p>
+      </div>
+      <hr />
+    </ion-list>
+  </div>
+</ion-content>
+
