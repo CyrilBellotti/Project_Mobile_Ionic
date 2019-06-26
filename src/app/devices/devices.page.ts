@@ -15,15 +15,14 @@ export class DevicesPage implements OnInit {
   constructor(private route: Router, public httpClient: HttpClient, public homeService: HomeService) { }
 
   ngOnInit() {
-    if (!this.homeService.user.name) {
-      this.route.navigateByUrl('/home');
+    if (!this.homeService.user) {
+      this.route.navigateByUrl('/login');
       return;
     }
     this.devices = this.homeService.user.device;
   }
 
   goToDevice(device: any) {
-    console.log(device);
-    this.route.navigateByUrl('/devices/' + device.id);
+    this.route.navigateByUrl('/devices/' + device.uid);
   }
 }

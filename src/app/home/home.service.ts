@@ -1,21 +1,14 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HomeService {
-  user =  {
-    id: 2,
-    device: [],
-    name: '',
-    mail: ''
-  }
+  user:  any;
+  device:  any;
 
-  device =  {
-    id: 2,
-    sensor: [],
-    uid: ''
-  }
-
-  constructor() { }
+  constructor(public httpClient: HttpClient) { }
 }

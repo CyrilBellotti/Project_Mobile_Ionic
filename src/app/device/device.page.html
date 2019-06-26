@@ -4,7 +4,7 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>
-      Device {{device.name}}
+      Device
     </ion-title>
   <ion-buttons slot="end">
     <ion-icon name="power" size="large" (click)="logout()"></ion-icon>
@@ -25,10 +25,10 @@
       </ion-segment-button>
   </ion-segment>
   <br />
-  <div *ngIf="actualState === 'list'">
+  <div *ngIf="actualState === 'list' && device">
     <ion-list>
       <p><strong>My sensor :</strong></p>
-      <div *ngFor="let sensor of device.sensor; let i = index;" padding>
+      <div *ngFor="let sensor of device.sensors; let i = index;" padding>
         <p><strong>
           Sensor {{i + 1}}
         </strong>
@@ -38,6 +38,57 @@
       </div>
       <hr />
     </ion-list>
+  </div>
+  <div *ngIf="actualState === 'action'">
+    <p><strong>Run an action on a sensor une action :</strong></p>
+    <ion-list>    
+      <ion-item>
+        <ion-label>Sensor selected</ion-label>
+        <ion-select [(ngModel)]="sensorSelected">
+          <ion-select-option value="light">Light</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+    <ion-button expand="block" (click)="runActionOnDevice()">Action</ion-button>
+  </div>
+  <div *ngIf="actualState === 'stats'">
+    <div style="display: block;" *ngIf="test">
+      <canvas baseChart width="300" height="400"
+                  [datasets]="lineChartData"
+                  [labels]="lineChartLabels"
+                  [options]="lineChartOptions"
+                  [colors]="lineChartColors"
+                  [legend]="lineChartLegend"
+                  [chartType]="lineChartType"
+                  (chartHover)="chartHovered($event)"
+                  (chartClick)="chartClicked($event)"></canvas>
+    </div>
+    <p><strong>Selected params to load stats :</strong></p>
+    <ion-list>    
+      <ion-item>
+        <ion-label>Sensor selected</ion-label>
+        <ion-select [(ngModel)]="statsSensorSelected">
+            <ion-select-option *ngFor="let sensor of device.sensors; let i = index;" value="{{sensor.uid}}">
+              {{sensor.uid}}
+            </ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label>Calcul Type selected</ion-label>
+        <ion-select [(ngModel)]="statsTypeCalcul">
+          <ion-select-option value="average">Average</ion-select-option>
+        </ion-select>
+        </ion-item>
+        <ion-item>
+        <ion-label>Duration selected</ion-label>
+        <ion-select [(ngModel)]="statsDuree">
+          <ion-select-option value="oneDay">1 day</ion-select-option>
+          <ion-select-option value="oneWeek">1 week</ion-select-option>
+          <ion-select-option value="oneMonth">1 month</ion-select-option>
+        </ion-select>
+        </ion-item>
+    </ion-list>
+    <ion-button expand="block" (click)="loadStat()">Action</ion-button>
   </div>
 </ion-content>
 

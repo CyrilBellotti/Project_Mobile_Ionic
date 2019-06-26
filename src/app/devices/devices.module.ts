@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
+import { ChartsModule } from 'ng2-charts';
 
 import { DevicesPage } from './devices.page';
 import { DevicePage } from '../device/device.page';
@@ -21,6 +22,7 @@ const routes: Routes = [
 
 @NgModule({
   imports: [
+    ChartsModule,
     CommonModule,
     FormsModule,
     IonicModule,
