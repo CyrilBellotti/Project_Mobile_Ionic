@@ -16,8 +16,8 @@ export class DevicesPage implements OnInit {
   constructor(private msalService: MsalService, private route: Router, public httpClient: HttpClient, public homeService: HomeService) { }
 
   ngOnInit() {
-    if (!this.homeService.user) {
-      this.route.navigateByUrl('/login');
+    if (!this.msalService.isLoggedIn()) {
+      this.route.navigateByUrl('/login')
       return;
     }
     this.devices = this.homeService.user.device;

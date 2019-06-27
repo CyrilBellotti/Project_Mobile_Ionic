@@ -19,6 +19,10 @@ export class HomePage implements OnInit {
   results: Observable<any>;
 
   ngOnInit() {
+    if (!this.msalService.isLoggedIn()) {
+      this.route.navigateByUrl('/login')
+      return;
+    }
     this.httpClient.get('http://localhost:8080/users/mail/' + this.msalService.getUserEmail()).subscribe((val) => {
         this.homeService.user = val;
       }, error => {

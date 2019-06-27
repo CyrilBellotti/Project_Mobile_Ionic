@@ -18,11 +18,14 @@ export class DevicePage implements OnInit {
   sensorSelected: string;
 
   ngOnInit() {
+    if (!this.msalService.isLoggedIn()) {
+      this.route.navigateByUrl('/login')
+      return;
+    }
     this.sensorSelected = "light"
     this.httpClient.get("http://localhost:8080/devices/uid/" + this.activatedRoute.snapshot.paramMap.get("id")).subscribe((val) => {  
         this.homeService.device = val;
         this.device = this.homeService.device;
-        console.log(this.)
       }, error => {
         console.log(error)
       }
