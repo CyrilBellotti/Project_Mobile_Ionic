@@ -19,8 +19,21 @@ export class LoginPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    // this.loadMyUser();
-    console.log(this.msalService.getUser());
+    if (this.msalService.isLoggedIn()) {
+      this.httpClient.get('http://localhost:8080/users/mail/' + this.msalService.getUserEmail()).subscribe((val) => {
+        this.homeService.user = val;
+        if (!val) {
+          this.httpClient.post("http://localhost:8080/users/createUser/", { name: this.msalService.getUserEmail(), mail: this.msalService.getUserEmail() }).subscribe((val2) => {  
+            this.homeService.user = val2;
+          }, error => {
+            console.log(error)
+          })
+        }
+        }, error => {
+          console.log(error)
+        }
+      )
+    }
   }
 
   useremail(){
@@ -30,7 +43,6 @@ export class LoginPage implements OnInit {
 
   login(){
     this.msalService.login();
-    console.log("toto", this.msalService.getUserEmail());
   }
 
   signup(){
@@ -46,23 +58,6 @@ export class LoginPage implements OnInit {
   }
 
   goToHome() {
-    console.log(this.msalService.getUserEmail());
-    this.httpClient.get('http://localhost:8080/users/mail/' + this.msalService.getUserEmail()).subscribe((val) => {
-      this.homeService.user = val;
-      console.log(this.homeService.user);
-      }, error => {
-        console.log(error)
-      }
-    )
     this.route.navigateByUrl('/home')
   }
-
-  // loadMyUser() {
-  //   this.httpClient.get('http://localhost:8080/users/' + 2, { headers: this.headers }).subscribe((val) => {  
-  //       this.homeService.user = val;
-  //     }, error => {
-  //       console.log(error)
-  //     }
-  //   )
-  // }
 }
