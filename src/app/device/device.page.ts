@@ -74,7 +74,6 @@ export class DevicePage implements OnInit {
       console.log("erreur");
       return;
     }
-    console.log(typeCapteur)
     if (this.statsDuree === "oneDay") {
       this.duree = 24;
     } else if (this.statsDuree === "oneWeek") {
@@ -83,8 +82,7 @@ export class DevicePage implements OnInit {
       this.duree = 720;
     }
     this.duree
-    console.log(this.statsTypeCalcul, this.duree, this.statsSensorSelected.uid);
-    this.httpClient.get("http://localhost:8080/devices/stats/" + this.statsSensorSelected.uid + "/" + this.statsTypeCalcul + "/" + this.duree).subscribe((val) => {  
+    this.httpClient.get("http://localhost:8080/devices/stats/" + this.statsSensorSelected + "/" + this.statsTypeCalcul + "/" + this.duree).subscribe((val) => {  
         console.log(val)
         const lineChartDataArray = [];
         this.value = [
