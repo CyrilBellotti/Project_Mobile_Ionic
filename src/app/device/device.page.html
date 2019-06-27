@@ -28,13 +28,18 @@
   <div *ngIf="actualState === 'list' && device">
     <ion-list>
       <p><strong>My sensor :</strong></p>
-      <div *ngFor="let sensor of device.sensors; let i = index;" padding>
-        <p><strong>
-          Sensor {{i + 1}}
-        </strong>
-        </p>
-        <p>Type : {{ sensor.type }}</p>
-        <p>Last value : {{ sensor.value }}</p>
+      <div *ngIf=!device.sensors.length>
+        No sensor found.
+      </div>
+      <div *ngIf="device.sensors.length" >
+        <div *ngFor="let sensor of device.sensors; let i = index;" padding>
+          <p><strong>
+            Sensor {{i + 1}}
+          </strong>
+          </p>
+          <p>Type : {{ sensor.type }}</p>
+          <p>Last value : {{ sensor.value }}</p>
+        </div>
       </div>
       <hr />
     </ion-list>
@@ -45,7 +50,7 @@
       <ion-item>
         <ion-label>Sensor selected</ion-label>
         <ion-select [(ngModel)]="sensorSelected">
-          <ion-select-option value="light">Light</ion-select-option>
+          <ion-select-option value="light" *ngIf="device.sensors.length" >Light</ion-select-option>
         </ion-select>
       </ion-item>
     </ion-list>

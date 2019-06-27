@@ -18,10 +18,9 @@ export class HomePage implements OnInit {
 
   results: Observable<any>;
 
-  async ngOnInit() {
+  ngOnInit() {
     this.httpClient.get('http://localhost:8080/users/mail/' + this.msalService.getUserEmail()).subscribe((val) => {
         this.homeService.user = val;
-        console.log(this.homeService.user);
       }, error => {
         console.log(error)
       }

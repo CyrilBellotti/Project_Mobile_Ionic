@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HomeService } from '../home/home.service';
+import { MsalService } from '../services/msal.service';
 
 @Component({
   selector: 'app-device',
@@ -13,7 +14,7 @@ export class DevicePage implements OnInit {
   device: { id: number; sensor: any[]; uid: string; }
 
   
-  constructor(private activatedRoute: ActivatedRoute, private route: Router, public httpClient: HttpClient, public homeService: HomeService) { }
+  constructor(private msalService: MsalService, private activatedRoute: ActivatedRoute, private route: Router, public httpClient: HttpClient, public homeService: HomeService) { }
   sensorSelected: string;
 
   ngOnInit() {
@@ -21,7 +22,7 @@ export class DevicePage implements OnInit {
     this.httpClient.get("http://localhost:8080/devices/uid/" + this.activatedRoute.snapshot.paramMap.get("id")).subscribe((val) => {  
         this.homeService.device = val;
         this.device = this.homeService.device;
-        console.log(this.device)
+        console.log(this.)
       }, error => {
         console.log(error)
       }
@@ -43,7 +44,6 @@ export class DevicePage implements OnInit {
 
   runActionOnDevice() {
     if (this.sensorSelected == 'light') {
-      console.log(this.homeService.device.sensors)
       this.homeService.device.sensors.forEach(element => {
         if (element.type === "Light") {
           this.type = element.type;
@@ -178,4 +178,7 @@ export class DevicePage implements OnInit {
     console.log(e);
   }
 
+  logout(){
+    this.msalService.logout();
+  }
 }
