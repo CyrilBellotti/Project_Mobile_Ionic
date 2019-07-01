@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
+    <ion-buttons slot="start" (click)="back()">
+      <ion-icon name="arrow-back" size="large"></ion-icon> Back
     </ion-buttons>
     <ion-title>
       Device
@@ -54,6 +54,14 @@
         </ion-select>
       </ion-item>
     </ion-list>
+    <p>Sensor state :
+      <span *ngIf="sensorActive">
+        ON
+      </span>
+      <span *ngIf="!sensorActive">
+        OFF
+      </span>
+    </p>
     <ion-button expand="block" (click)="runActionOnDevice()">Action</ion-button>
   </div>
   <div *ngIf="actualState === 'stats'">

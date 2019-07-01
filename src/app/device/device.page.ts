@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HomeService } from '../home/home.service';
 import { MsalService } from '../services/msal.service';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-device',
@@ -14,7 +15,7 @@ export class DevicePage implements OnInit {
   device: { id: number; sensor: any[]; uid: string; }
 
   
-  constructor(private msalService: MsalService, private activatedRoute: ActivatedRoute, private route: Router, public httpClient: HttpClient, public homeService: HomeService) { }
+  constructor(public toastController: ToastController, private msalService: MsalService, private activatedRoute: ActivatedRoute, private route: Router, public httpClient: HttpClient, public homeService: HomeService) { }
   sensorSelected: string;
 
   ngOnInit() {
@@ -23,6 +24,7 @@ export class DevicePage implements OnInit {
       return;
     }
     this.sensorSelected = "light"
+    // this.listSensorAction.push({ sensor: "light", actionEvent: false })
     this.httpClient.get("http://localhost:8080/devices/uid/" + this.activatedRoute.snapshot.paramMap.get("id")).subscribe((val) => {  
         this.homeService.device = val;
         this.device = this.homeService.device;
@@ -42,20 +44,43 @@ export class DevicePage implements OnInit {
   statsTypeCalcul: String;
   statsDuree: String;
   actualState: string = 'list';
+  // listSensorAction: [];
+  sensorActive = false;
 
 
-
-  runActionOnDevice() {
+  async runActionOnDevice() {
     if (this.sensorSelected == 'light') {
-      this.homeService.device.sensors.forEach(element => {
-        if (element.type === "Light") {
-          this.type = element.type;
-          this.uidSensor = element.uid;
-        }
+      // this.listSensorAction.forEach(element => {
+        // console.log(element)
+        // if (element.sensor == 'light') {
+        //   this.type = element.type;
+        //   this.uidSensor = element.uid;
+        // }
+      // });
+      const toast = await this.toastController.create({
+        message: 'Your order has been send with success.',
+        color: 'success',
+        duration: 2000
       });
-      this.httpClient.post("http://localhost:8080/devices/action/", { type: this.type, uidSensor: this.uidSensor, uidDevice: this.homeService.device.uid }).subscribe((val) => {  
+      const toastError = await this.toastController.create({
+        message: 'Failed to send your order.',
+        color: 'danger',
+        duration: 2000
+      });
+      let val = "0";
+      if (this.sensorActive) {
+        this.sensorActive = false;
+        val = "0";
+      } else {
+        this.sensorActive = true;
+        val = "1"
+      }
+      // this.sensorActive = !this.sensorActive;
+      this.httpClient.post("http://localhost:8080/devices/action/", { sensor: "sensor", actionEvent: val }).subscribe((val) => {  
         console.log(val)
+        toast.present();
       }, error => {
+        toastError.present();
         console.log(error)
       }
     )
@@ -66,7 +91,7 @@ export class DevicePage implements OnInit {
   value: { value: number; date: string; }[];
   test: boolean;
 
-  loadStat() {
+  async loadStat() {
     let typeCapteur: any;
     this.homeService.device.sensors.forEach(element => {
       if (element.uid == this.statsSensorSelected) {
@@ -74,9 +99,15 @@ export class DevicePage implements OnInit {
       }
     });
     if (!this.statsTypeCalcul || !this.statsDuree || !this.statsSensorSelected) {
-      console.log("erreur");
+      const toastError = await this.toastController.create({
+        message: 'Select all information before asking to show graphics.',
+        color: 'primary',
+        duration: 3000
+      });
+      toastError.present();
       return;
     }
+    let data = null;
     if (this.statsDuree === "oneDay") {
       this.duree = 24;
     } else if (this.statsDuree === "oneWeek") {
@@ -84,10 +115,30 @@ export class DevicePage implements OnInit {
     } else if (this.statsDuree === "oneMonth") {
       this.duree = 720;
     }
-    this.duree
-    this.httpClient.get("http://localhost:8080/devices/stats/" + this.statsSensorSelected + "/" + this.statsTypeCalcul + "/" + this.duree).subscribe((val) => {  
-        console.log(val)
+    if (this.statsTypeCalcul === "average") {
+      data = "Moyenne"
+    }
+    this.httpClient.get("http://localhost:8080/devices/sensor/" + this.statsSensorSelected + "/duration/" + this.duree + "/calculType/" + data).subscribe((val) => {  
+        console.log(val, val[0])
         const lineChartDataArray = [];
+        lineChartDataArray.length = 0;
+        this.lineChartLabels.length = 0;
+        Object.values(val).forEach(element => {
+          const date = new Date(element.date) 
+          var day = date.getDate();
+          var monthIndex = date.getMonth();
+          var year = date.getFullYear();
+          var minutes = date.getMinutes();
+          var hours = date.getHours();
+          var seconds = date.getSeconds();
+          if (this.statsDuree === "oneDay") {
+            var myFormattedDate = hours+":"+minutes+":"+seconds;
+          } else {
+            var myFormattedDate = year+"-"+(monthIndex+1)+"-"+day+ " " + hours+":"+minutes+":"+seconds;
+          }
+          this.lineChartLabels.push(myFormattedDate);
+          lineChartDataArray.push(element.value);
+        });
         this.value = [
           {
             value: 12,
@@ -110,12 +161,11 @@ export class DevicePage implements OnInit {
             date: "16h"
           }
         ]
-        lineChartDataArray.length = 0;
-        this.lineChartLabels.length = 0;
-        this.value.forEach(e => {
-          this.lineChartLabels.push(e.date);
-          lineChartDataArray.push(e.value);
-        })
+      
+        // this.value.forEach(e => {
+        //   this.lineChartLabels.push(e.date);
+        //   lineChartDataArray.push(e.value);
+        // })
         this.lineChartData = [
           {data: lineChartDataArray, label: typeCapteur}
         ];
@@ -174,14 +224,16 @@ export class DevicePage implements OnInit {
   
   // events
   public chartClicked(e:any):void {
-    console.log(e);
   }
   
   public chartHovered(e:any):void {
-    console.log(e);
   }
 
   logout(){
     this.msalService.logout();
+  }
+
+  back() {
+    this.route.navigateByUrl('/devices');
   }
 }

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { HomeService } from '../home/home.service';
 import { MsalService } from '../services/msal.service';
+import { NativePageTransitions, NativeTransitionOptions } from '@ionic-native/native-page-transitions/ngx';
 
 @Component({
   selector: 'app-devices',
@@ -17,8 +18,10 @@ export class DevicesPage implements OnInit {
 
   ngOnInit() {
     if (!this.msalService.isLoggedIn()) {
-      this.route.navigateByUrl('/login')
       return;
+    }
+    if (!this.homeService.user) {
+      this.route.navigateByUrl('/home');
     }
     this.devices = this.homeService.user.device;
   }
@@ -30,4 +33,29 @@ export class DevicesPage implements OnInit {
   logout(){
     this.msalService.logout();
   }
+
+  // options:  NativeTransitionOptions = {
+  //   direction: 'up',
+  //   duration: 500,
+  //   slowdownfactor: 3,
+  //   slidePixels: 20,
+  //   iosdelay: 100,
+  //   androiddelay: 150,
+  //   fixedPixelsTop: 0,
+  //   fixedPixelsBottom: 60
+  //  }
+
+  back() {
+    // this.nativePageTransitions.slide(this.options);
+    this.route.navigateByUrl("/home")
+  }
+
+  // ionViewWillLeave() {
+
+     
+   
+  //   this.nativePageTransitions.slide(options)
+  //     .then()
+  //     .catch();
+  //  }
 }
